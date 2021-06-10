@@ -10,7 +10,7 @@ class FinancialSummary(models.Model):
     Credits = models.IntegerField()
     Expenses = models.IntegerField()
     NetIncome = models.IntegerField()
-    Year = models.PositiveIntegerField()
+    Year = models.PositiveIntegerField(unique=True)
 
 
 class FinancialPosition(models.Model):

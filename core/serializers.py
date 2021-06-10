@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import FinancialSummary, FinancialPosition
+from core.models import FinancialSummary
 
 
 class FinancialSummarySerializer(serializers.ModelSerializer):

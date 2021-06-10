@@ -13,6 +13,8 @@ class FinancialSummary(models.Model):
     Year = models.PositiveIntegerField(unique=True)
 
 
-class FinancialPosition(models.Model):
-    CashAndInvestments = models.IntegerField(null=True)
-    TotalAssets = models.IntegerField(null=True)
+# class FinancialPosition(models.Model):
+#     CashAndInvestments = models.IntegerField()
+#     TotalAssets = models.IntegerField()
+#     NetPosition = models.IntegerField()
+#     FinancialSummary = models.OneToOneField(FinancialSummary, on_delete=models.CASCADE)

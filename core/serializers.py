@@ -6,4 +6,4 @@ class FinancialSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = FinancialSummary
         fields = ('PremiumIncome', 'OtherIncome', 'InvestmentIncome',
-                  'Credits', 'Expenses', 'NetIncome')
+                  'Credits', 'Expenses', 'NetIncome', 'Year',)

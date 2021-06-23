@@ -14,6 +14,7 @@ class FinancialSummaryListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = FinancialSummarySerializer
     queryset = FinancialSummary.objects.all()
 
+
 # basic view for Retrieving - Updating - Deleting a specific FinancialSummary record
 # which uses the Year field in order to find the specified record
 class FinancialSummaryRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):

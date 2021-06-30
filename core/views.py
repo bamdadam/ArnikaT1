@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.generics import get_object_or_404
 
-from core.models import FinancialSummary
-from core.serializers import FinancialSummarySerializer
+from core.models import FinancialSummary, Company
+from core.serializers import FinancialSummarySerializer, CompanySerializer
 
 
 # Create your views here.
@@ -22,3 +22,8 @@ class FinancialSummaryRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestro
     queryset = FinancialSummary.objects.all()
     lookup_field = 'Year'
     lookup_url_kwarg = 'Year'
+
+
+class CompanyListCreateAPIView(generics.ListCreateAPIView):
+    serializer_class = CompanySerializer
+    queryset = Company.objects.all()

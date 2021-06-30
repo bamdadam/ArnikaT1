@@ -11,15 +11,15 @@ class Company(models.Model):
 # https://data.world/finance/pbgc-financial-summary-data
 # at the moment we dont have any particular data dependency between tables
 class FinancialSummary(models.Model):
-    NetIncome = models.IntegerField()
+    NetIncome = models.IntegerField(default=0)
     Year = models.PositiveIntegerField()
-    Company = models.ForeignKey(Company, related_name='FinancialSummary', on_delete=models.CASCADE,)
+    Company = models.ForeignKey(Company, related_name='financialsummary', on_delete=models.CASCADE,)
 
     class Meta:
         unique_together = ['Company', 'Year']
 
     def __str__(self):
-        return 'ok'
+        return f"{self.Company  .CompanyName}:{self.Year}:{self.NetIncome}"
 
 # class FinancialPosition(models.Model):
 #     CashAndInvestments = models.IntegerField()

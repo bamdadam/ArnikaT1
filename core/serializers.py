@@ -1,4 +1,5 @@
 import traceback
+from typing import Dict
 from datetime import datetime, date
 
 from rest_framework import serializers
@@ -15,25 +16,28 @@ class FinancialSummarySerializer(serializers.ModelSerializer):
         model = FinancialSummary
         fields = ['NetIncome', 'Year']
 
-    def validate_Year(self, value):
-        try:
-            # print(value)
-            # date = datetime.strptime(value, '%Y-%m-%d')
-            if value > datetime.now().date():
-                raise serializers.ValidationError("Please enter a valid Date")
-        except ValueError:
-            raise serializers.ValidationError("Incorrect data format, should be YYYY-MM-DD")
+    # def validate_Year(self, value):
+    #     try:
+    #         # print(value)
+    #         # date = datetime.strptime(value, '%Y-%m-%d')
+    #         if value > datetime.now().date():
+    #             raise serializers.ValidationError("Please enter a valid Date")
+    #     except ValueError:
+    #         raise serializers.ValidationError("Incorrect data format, should be YYYY-MM-DD")
 
 
 class CompanySerializer(serializers.ModelSerializer):
-    financialsummary = FinancialSummarySerializer(many=True, )
+    financialsummary = FinancialSummarySerializer(many=True, required=False)
 
     class Meta:
         model = Company
         fields = ['CompanyName', 'financialsummary', 'id']
 
     def create(self, validated_data):
-        finances_data = validated_data.pop('financialsummary')
+        if "financialsummary" in validated_data:
+            finances_data = validated_data.pop('financialsummary')
+        else:
+            finances_data = {}
         try:
             company = Company.objects.create(**validated_data)
             for finance_data in finances_data:

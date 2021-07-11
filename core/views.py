@@ -27,3 +27,8 @@ class FinancialSummaryRetrieveUpdateDestroyAPIView(MultipleFieldLookupMixin, gen
 class CompanyListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = CompanySerializer
     queryset = Company.objects.all()
+
+
+class CompanyRetrieveUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CompanySerializer
+    queryset = Company.objects.all()

@@ -22,7 +22,7 @@ class FinancialSummarySerializer(serializers.ModelSerializer):
             # print(value)
             # date = datetime.strptime(value, '%Y-%m-%d')
             if value > datetime.now().date():
-                raise serializers.ValidationError("Please enter a valid Date", code='Invalid Date')
+                raise serializers.ValidationError("Please enter a valid Date")
             return value
         except ValueError:
             raise serializers.ValidationError("Incorrect data format, should be YYYY-MM-DD")
@@ -32,7 +32,7 @@ class FinancialSummarySerializer(serializers.ModelSerializer):
 
 
 class CompanySerializer(serializers.ModelSerializer):
-    financialsummary = FinancialSummarySerializer(required=False, many=True)
+    financialsummary = FinancialSummarySerializer(required=False, many=True, read_only=True)
 
     class Meta:
         model = Company

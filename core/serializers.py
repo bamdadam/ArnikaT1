@@ -27,8 +27,8 @@ class FinancialSummarySerializer(serializers.ModelSerializer):
         except ValueError:
             raise serializers.ValidationError("Incorrect data format, should be YYYY-MM-DD")
 
-    def to_internal_value(self, data):
-        print(data)
+    # def to_internal_value(self, data):
+    #     print(data)
 
 
 class CompanySerializer(serializers.ModelSerializer):

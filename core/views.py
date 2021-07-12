@@ -13,7 +13,14 @@ from core.Mixins import MultipleFieldLookupMixin
 # or creating a FinancialSummary record
 class FinancialSummaryListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = FinancialSummarySerializer
-    queryset = FinancialSummary.objects.all()
+
+    def get_queryset(self):
+        net_income = self.kwargs.get('NetIncome')
+        if net_income:
+            queryset = FinancialSummary.objects.filter(NetIncome=net_income)
+        else:
+            queryset = FinancialSummary.objects.all()
+        return queryset
 
 
 # basic view for Retrieving - Updating - Deleting a specific FinancialSummary record

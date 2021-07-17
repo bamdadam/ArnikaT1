@@ -3,15 +3,9 @@ from datetime import datetime
 from rest_framework import serializers
 from core.models import FinancialSummary, Company
 
+
 # simple Serializer class for FinancialSummary model
 # for now it takes all the fields and just Serializes them
-"""
-To Do 
-Financial Query based on Year or NetIncome
-or Company Name
-"""
-
-
 class FinancialSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = FinancialSummary
@@ -19,16 +13,11 @@ class FinancialSummarySerializer(serializers.ModelSerializer):
 
     def validate_Year(self, value):
         try:
-            # print(value)
-            # date = datetime.strptime(value, '%Y-%m-%d')
             if value > datetime.now().date():
                 raise serializers.ValidationError("Please enter a valid Date")
             return value
         except ValueError:
             raise serializers.ValidationError("Incorrect data format, should be YYYY-MM-DD")
-
-    # def to_internal_value(self, data):
-    #     print(data)
 
 
 class CompanySerializer(serializers.ModelSerializer):

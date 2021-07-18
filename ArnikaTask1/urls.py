@@ -22,6 +22,6 @@ from core import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('core/', include('core.urls')),
+    path('v1/core/', include('core.urls', namespace='v1')),
 ]
 handler404 = views.error_page

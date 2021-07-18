@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 # from core.exceptions import PageNotFound
+from core.Version_dicts import FinancialSummarySerializer_dict, CompanySerializer_dict
 from core.exceptions import PageNotFound
 from core.models import FinancialSummary, Company
 from core.serializers import FinancialSummarySerializer, CompanySerializer
@@ -18,7 +19,6 @@ from core.Mixins import MultipleFieldLookupMixin
 # basic view for listing all FinancialSummary records
 # or creating a FinancialSummary record
 class FinancialSummaryListCreateAPIView(generics.ListCreateAPIView):
-    serializer_class = FinancialSummarySerializer
 
     def get_queryset(self):
         net_income = self.kwargs.get('NetIncome')
@@ -28,11 +28,13 @@ class FinancialSummaryListCreateAPIView(generics.ListCreateAPIView):
             queryset = FinancialSummary.objects.all()
         return queryset
 
+    def get_serializer_class(self):
+        return FinancialSummarySerializer_dict.get(self.request.version, FinancialSummarySerializer)
+
 
 # basic view for Retrieving - Updating - Deleting a specific FinancialSummary record
 # which uses the Year field in order to find the specified record
 class FinancialSummaryRetrieveUpdateDestroyAPIView(MultipleFieldLookupMixin, generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = FinancialSummarySerializer
     queryset = FinancialSummary.objects.all()
     lookup_fields = ['Company', 'Year']
 
@@ -41,20 +43,27 @@ class FinancialSummaryRetrieveUpdateDestroyAPIView(MultipleFieldLookupMixin, gen
         self.perform_destroy(instance)
         return Response({'detail': 'done'}, status=status.HTTP_204_NO_CONTENT)
 
+    def get_serializer_class(self):
+        return FinancialSummarySerializer_dict.get(self.request.version, FinancialSummarySerializer)
+
 
 class CompanyListCreateAPIView(generics.ListCreateAPIView):
-    serializer_class = CompanySerializer
     queryset = Company.objects.all()
+
+    def get_serializer_class(self):
+        return CompanySerializer_dict.get(self.request.version, CompanySerializer)
 
 
 class CompanyRetrieveUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = CompanySerializer
     queryset = Company.objects.all()
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({'detail': 'done'}, status=status.HTTP_204_NO_CONTENT)
+
+    def get_serializer_class(self):
+        return CompanySerializer_dict.get(self.request.version, CompanySerializer)
 
 
 @api_view()

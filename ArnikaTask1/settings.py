@@ -72,6 +72,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ArnikaTask1.wsgi.application'
 
+REST_FRAMEWORK = {
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning'
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

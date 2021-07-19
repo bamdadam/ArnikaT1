@@ -12,12 +12,9 @@ class FinancialSummarySerializer(serializers.ModelSerializer):
         fields = ['NetIncome', 'Year', 'Company']
 
     def validate_Year(self, value):
-        try:
-            if value > datetime.now().date():
-                raise serializers.ValidationError("Please enter a valid Date")
-            return value
-        except ValueError:
-            raise serializers.ValidationError("Incorrect data format, should be YYYY-MM-DD")
+        if value > datetime.now().date():
+            raise serializers.ValidationError("Please enter a valid Date")
+        return value
 
 
 class CompanySerializer(serializers.ModelSerializer):

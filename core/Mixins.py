@@ -9,7 +9,7 @@ class MultipleFieldLookupMixin:
         for field in self.lookup_fields:
             if self.kwargs[field]:  # Ignore empty fields.
                 filter[field] = self.kwargs[field]
-                print(filter[field])
+                # print(filter[field])
         obj = get_object_or_404(queryset, **filter)  # Lookup the object
         # self.check_object_permissions(self.request, obj)
         return obj

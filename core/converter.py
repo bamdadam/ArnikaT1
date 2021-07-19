@@ -1,6 +1,8 @@
 from persiantools import characters, digits
 from persiantools.jdatetime import JalaliDate
 
+from core.exceptions import WrongDateFormat
+
 
 class PersianPathConverter:
     regex = '[۰۱۲۳۴۵۶۷۸۹-]+'
@@ -10,15 +12,19 @@ class PersianPathConverter:
             persian_value = value.split('-')
             english_value = [int(digits.fa_to_en(x)) for x in persian_value]
             date = JalaliDate(english_value[0], english_value[1], english_value[2]).to_gregorian()
-            print(date)
+            # print(date)
             return date
-        except:
+        except (ValueError, IndexError):
             raise ValueError
 
     def to_url(self, value):
         return value
 
-
 # if __name__ == '__main__':
-#     date = ['1399', '04', '27']
-#     print(JalaliDate(int(date[0]), int(date[1]), int(date[2])).to_gregorian())
+#     date = ['۱۳۹۵', '۰۴', '۴۴']
+#     english_value = [int(digits.fa_to_en(x)) for x in date]
+#     try:
+#         print(JalaliDate(int(english_value[0]), int(english_value[1]),
+#                      int(english_value[2])).to_gregorian())
+#     except ValueError:
+#         print('value error')

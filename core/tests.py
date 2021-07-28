@@ -28,6 +28,11 @@ class FinancialSummaryTests(TestCase):
             'NetIncome': '25',
             'Year': "2018-11-15"
         }
+        self.invalid_f1 = {
+            'Company': self.c1.id,
+            'NetIncome': "apple",
+            'Year': "2018-11-15"
+        }
 
     def test_get_all_FinancialSummary(self):
         response = client.get(reverse('v1:list_create_financial_summary'))
@@ -44,22 +49,45 @@ class FinancialSummaryTests(TestCase):
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_put_valid_FinancialSummary(self):
+    def test_put_valid_invalid_FinancialSummary(self):
         response = client.put(reverse('v1:retrieve_update_destroy_financial_summary_regular',
                                       args=[self.c1.id, "2017-02-13"]),
                               data=json.dumps(self.valid_f1),
                               content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = client.put(reverse('v1:retrieve_update_destroy_financial_summary_regular',
+                                      args=[self.c2.id, "2018-11-13"]),
+                              data=json.dumps(self.invalid_f1),
+                              content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_post_valid_FinancialSummary(self):
+    def test_post_valid_invalid_FinancialSummary(self):
         response = client.post(reverse('v1:list_create_financial_summary'),
                                data=json.dumps(self.valid_f2),
                                content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # print(response.data)
+        response = client.post(reverse('v1:list_create_financial_summary'),
+                               data=json.dumps(self.invalid_f1),
+                               content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_delete_valid_FinancialSummary(self):
+    def test_delete_FinancialSummary(self):
         response = client.delete(reverse('v1:retrieve_update_destroy_financial_summary_regular',
                                          args=[self.c2.id, "2017-04-13"]),
                                  content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_retrieve_update_delete_not_found_FinancialSummary(self):
+        response = client.get(reverse('v1:retrieve_update_destroy_financial_summary_regular',
+                                      args=[self.c1.id, "2017-02-19"]))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        response = client.put(reverse('v1:retrieve_update_destroy_financial_summary_regular',
+                                      args=[self.c1.id, "2017-02-19"]),
+                              data=json.dumps(self.valid_f1),
+                              content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        response = client.delete(reverse('v1:retrieve_update_destroy_financial_summary_regular',
+                                         args=[self.c2.id, "2017-04-25"]),
+                                 content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

@@ -65,6 +65,31 @@ class CompanyRetrieveUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     def get_serializer_class(self):
         return CompanySerializer_dict.get(self.request.version, CompanySerializer)
 
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        assert lookup_url_kwarg in self.kwargs, (
+                'Expected view %s to be called with a URL keyword argument '
+                'named "%s". Fix your URL conf, or set the `.lookup_field` '
+                'attribute on the view correctly.' %
+                (self.__class__.__name__, lookup_url_kwarg)
+        )
+        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+        if not hasattr(queryset, 'get'):
+            queryset__name = queryset.__name__ if isinstance(queryset, type) else queryset.__class__.__name__
+            raise ValueError(
+                "First argument to get_object_or_404() must be a Model, Manager, "
+                "or QuerySet, not '%s'." % queryset__name
+            )
+        try:
+            obj = queryset.get(**filter_kwargs)
+        except queryset.model.DoesNotExist:
+            model_instance = queryset.model.__name__
+            # raise Http404('No %s matches the given query.' % queryset.model._meta.object_name)
+            raise PageNotFound(detail=f"No {model_instance} matches the given query.")
+        self.check_object_permissions(self.request, obj)
+        return obj
+
 
 @api_view()
 def error_page(request, exception):

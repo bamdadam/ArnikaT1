@@ -23,8 +23,8 @@ class MultipleFieldLookupMixin:
         try:
             obj = queryset.get(**filter)
         except queryset.model.DoesNotExist:
-            model = str(queryset.model).translate({ord(c): None for c in "<>'."}).split('models')
+            model = queryset.model.__name__
             # raise Http404('No %s matches the given query.' % queryset.model._meta.object_name)
-            raise PageNotFound(detail=f"No {model[1]} matches the given query.")
+            raise PageNotFound(detail=f"No {model} matches the given query.")
         self.check_object_permissions(self.request, obj)
         return obj

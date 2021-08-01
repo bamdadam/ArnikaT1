@@ -1,4 +1,7 @@
+from django.http import Http404
 from rest_framework.generics import get_object_or_404
+
+from core.exceptions import PageNotFound
 
 
 class MultipleFieldLookupMixin:
@@ -10,6 +13,18 @@ class MultipleFieldLookupMixin:
             if self.kwargs[field]:  # Ignore empty fields.
                 filter[field] = self.kwargs[field]
                 # print(filter[field])
-        obj = get_object_or_404(queryset, **filter)  # Lookup the object
-        # self.check_object_permissions(self.request, obj)
+        # obj = get_object_or_404(queryset, **filter)  # Lookup the object
+        if not hasattr(queryset, 'get'):
+            queryset__name = queryset.__name__ if isinstance(queryset, type) else queryset.__class__.__name__
+            raise ValueError(
+                "First argument to get_object_or_404() must be a Model, Manager, "
+                "or QuerySet, not '%s'." % queryset__name
+            )
+        try:
+            obj = queryset.get(**filter)
+        except queryset.model.DoesNotExist:
+            model = str(queryset.model).translate({ord(c): None for c in "<>'."}).split('models')
+            # raise Http404('No %s matches the given query.' % queryset.model._meta.object_name)
+            raise PageNotFound(detail=f"No {model[1]} matches the given query.")
+        self.check_object_permissions(self.request, obj)
         return obj

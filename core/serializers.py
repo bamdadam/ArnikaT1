@@ -16,6 +16,15 @@ class FinancialSummarySerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Please enter a valid Date")
         return value
 
+    def update(self, instance, validated_data):
+        if 'Company' in validated_data:
+            raise serializers.ValidationError(
+                {
+                    'Company': "Can't Change The Company Field After Financial Summary Creation"
+                }
+            )
+        return super(FinancialSummarySerializer, self).update(instance, validated_data)
+
 
 class CompanySerializer(serializers.ModelSerializer):
     financialsummary = FinancialSummarySerializer(required=False, many=True, read_only=True)

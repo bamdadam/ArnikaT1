@@ -19,12 +19,9 @@ from django.urls import path, include
 from django.conf.urls import (
   handler400, handler403, handler404, handler500)
 from core import views
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('v1/core/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('v1/core/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('v1/core/', include('core.urls', namespace='v1'))
+    path('v1/core/', include('core.urls', namespace='v1')),
 ]
 handler404 = views.error_page

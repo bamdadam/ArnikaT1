@@ -54,7 +54,6 @@ class FinancialSummaryTests(TestCase):
                                         args=[self.c1.id, "2017-02-13"]),
                                 data=json.dumps(self.valid_f1),
                                 content_type='application/json')
-        print(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response = client.patch(reverse('v1:retrieve_update_destroy_financial_summary_regular',
                                         args=[self.c1.id, "2018-11-13"]),

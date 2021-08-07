@@ -19,7 +19,7 @@ class FinancialSummaryTests(TestCase):
         self.f1 = FinancialSummary.objects.create(Company=self.c1, NetIncome=2150, Year="2017-02-13")
         self.f2 = FinancialSummary.objects.create(Company=self.c2, NetIncome=2155, Year="2017-04-13")
         self.valid_f1 = {
-            'Company': self.c2.id,
+            # 'Company': self.c2.id,
             'NetIncome': '3100',
             'Year': "2018-11-13"
         }
@@ -50,15 +50,16 @@ class FinancialSummaryTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_put_valid_invalid_FinancialSummary(self):
-        response = client.put(reverse('v1:retrieve_update_destroy_financial_summary_regular',
-                                      args=[self.c1.id, "2017-02-13"]),
-                              data=json.dumps(self.valid_f1),
-                              content_type='application/json')
+        response = client.patch(reverse('v1:retrieve_update_destroy_financial_summary_regular',
+                                        args=[self.c1.id, "2017-02-13"]),
+                                data=json.dumps(self.valid_f1),
+                                content_type='application/json')
+        print(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        response = client.put(reverse('v1:retrieve_update_destroy_financial_summary_regular',
-                                      args=[self.c2.id, "2018-11-13"]),
-                              data=json.dumps(self.invalid_f1),
-                              content_type='application/json')
+        response = client.patch(reverse('v1:retrieve_update_destroy_financial_summary_regular',
+                                        args=[self.c1.id, "2018-11-13"]),
+                                data=json.dumps(self.invalid_f1),
+                                content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_post_valid_invalid_FinancialSummary(self):

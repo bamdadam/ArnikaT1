@@ -1,16 +1,19 @@
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import APIException, NotFound
 from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 # from core.exceptions import PageNotFound
-from core.Version_dicts import FinancialSummarySerializer_dict, CompanySerializer_dict
+from core.Version_dicts import FinancialSummarySerializer_dict, CompanySerializer_dict, UserSerializer_dict
 from core.exceptions import PageNotFound
 from core.models import FinancialSummary, Company
-from core.serializers import FinancialSummarySerializer, CompanySerializer
+from core.serializers import FinancialSummarySerializer, CompanySerializer, UserSerializer
 from core.Mixins import MultipleFieldLookupMixin
 
 
@@ -49,6 +52,7 @@ class FinancialSummaryRetrieveUpdateDestroyAPIView(MultipleFieldLookupMixin, gen
 
 class CompanyListCreateAPIView(generics.ListCreateAPIView):
     queryset = Company.objects.all()
+    permission_classes = (IsAuthenticated,)
 
     def get_serializer_class(self):
         return CompanySerializer_dict.get(self.request.version, CompanySerializer)
@@ -89,6 +93,15 @@ class CompanyRetrieveUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
             raise PageNotFound(detail=f"No {model_instance} matches the given query.")
         self.check_object_permissions(self.request, obj)
         return obj
+
+
+class UserListCreateAPIView(generics.ListCreateAPIView):
+    # queryset = get_user_model().objects.all()
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+
+    def get_serializer_class(self):
+        return UserSerializer_dict.get(self.request.version, UserSerializer)
 
 
 @api_view()

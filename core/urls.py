@@ -3,12 +3,17 @@ from django.urls import path, register_converter
 from core.converter import PersianPathConverter
 from core.views import FinancialSummaryListCreateAPIView, \
     FinancialSummaryRetrieveUpdateDestroyAPIView, CompanyListCreateAPIView, \
-    CompanyRetrieveUpdateDeleteAPIView
+    CompanyRetrieveUpdateDeleteAPIView, UserListCreateAPIView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 # urls for implemented views
 app_name = 'core_app'
 register_converter(PersianPathConverter, 'persian_calender')
 urlpatterns = [
+    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+
+    path('refresh-token/', TokenRefreshView.as_view(), name='token_refresh'),
+
     path('financialsummary/', FinancialSummaryListCreateAPIView.as_view(),
          name="list_create_financial_summary"),
 
@@ -29,4 +34,8 @@ urlpatterns = [
 
     path('company/<int:pk>/', CompanyRetrieveUpdateDeleteAPIView.as_view(),
          name="retrieve_update_destroy_company"),
+
+    path('registeruser/', UserListCreateAPIView.as_view(),
+         name='register_user'),
+
 ]

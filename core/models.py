@@ -1,9 +1,11 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
 # Create your models here.
 class Company(models.Model):
     CompanyName = models.CharField(max_length=30)
+    admins = models.ManyToManyField(User, related_name="admin", blank=True)
 
     def __str__(self):
         return f'{self.id} : {self.CompanyName} : {self.financialsummary}'
@@ -23,4 +25,5 @@ class FinancialSummary(models.Model):
 
     def __str__(self):
         return f"{self.Company.CompanyName}:{self.Year}:{self.NetIncome}"
+
 

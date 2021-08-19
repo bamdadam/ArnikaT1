@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.decorators import api_view
@@ -10,10 +11,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 # from core.exceptions import PageNotFound
-from core.Version_dicts import FinancialSummarySerializer_dict, CompanySerializer_dict, UserSerializer_dict
-from core.exceptions import PageNotFound
+from core.Version_dicts import FinancialSummarySerializer_dict, CompanySerializer_dict, UserSerializer_dict, \
+    AddAdminToCompany_dict, DeleteAdminToCompany_dict
+from core.exceptions import PageNotFound, WrongDataFormat, ObjectNotExist
 from core.models import FinancialSummary, Company
-from core.serializers import FinancialSummarySerializer, CompanySerializer, UserSerializer
+from core.permissions import IsCompanyAdmin
+from core.serializers import FinancialSummarySerializer, CompanySerializer, UserSerializer, AddAdminToCompanySerializer, \
+    DeleteAdminToCompanySerializer
 from core.Mixins import MultipleFieldLookupMixin
 
 
@@ -102,6 +106,22 @@ class UserListCreateAPIView(generics.ListCreateAPIView):
 
     def get_serializer_class(self):
         return UserSerializer_dict.get(self.request.version, UserSerializer)
+
+
+class AddAdminToCompany(generics.UpdateAPIView):
+    queryset = Company.objects.all()
+    permission_classes = (IsAuthenticated, IsCompanyAdmin)
+
+    def get_serializer_class(self):
+        return AddAdminToCompany_dict.get(self.request.version, AddAdminToCompanySerializer)
+
+
+class DeleteAdminToCompany(generics.UpdateAPIView):
+    queryset = Company.objects.all()
+    permission_classes = (IsAuthenticated, IsCompanyAdmin)
+
+    def get_serializer_class(self):
+        return DeleteAdminToCompany_dict.get(self.request.version, DeleteAdminToCompanySerializer)
 
 
 @api_view()

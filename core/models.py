@@ -5,10 +5,10 @@ from django.db import models
 # Create your models here.
 class Company(models.Model):
     CompanyName = models.CharField(max_length=30)
-    admins = models.ManyToManyField(User, related_name="admin", blank=True)
+    admins = models.ManyToManyField(User, related_name="company_admin", blank=True)
 
     def __str__(self):
-        return f'{self.id} : {self.CompanyName} : {self.financialsummary}'
+        return f'{self.id} : {self.CompanyName} : {self.financialsummary} : {self.admins}'
 
 
 # simple Financial model based of Financial data highlighted from PBGC's financial statements
@@ -18,12 +18,10 @@ class Company(models.Model):
 class FinancialSummary(models.Model):
     NetIncome = models.IntegerField(default=0)
     Year = models.DateField()
-    Company = models.ForeignKey(Company, related_name='financialsummary', on_delete=models.CASCADE,)
+    Company = models.ForeignKey(Company, related_name='financialsummary', on_delete=models.CASCADE, )
 
     class Meta:
         unique_together = ['Company', 'Year']
 
     def __str__(self):
         return f"{self.Company.CompanyName}:{self.Year}:{self.NetIncome}"
-
-

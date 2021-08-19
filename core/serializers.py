@@ -9,9 +9,9 @@ from core.models import FinancialSummary, Company
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        # model = get_user_model()
         model = User
-        fields = ['username', 'password', ]
+        fields = ['username', 'password', 'company_admin']
+        read_only_fields = ['company_admin']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -48,7 +48,7 @@ class FinancialSummarySerializer(serializers.ModelSerializer):
 
 class CompanySerializer(serializers.ModelSerializer):
     financialsummary = FinancialSummarySerializer(required=False, many=True, read_only=True)
-    admins = UserSerializer(required=False, many=True,)
+    admins = UserSerializer(required=False, many=True, )
 
     class Meta:
         model = Company
@@ -62,3 +62,35 @@ class CompanySerializer(serializers.ModelSerializer):
             tb = traceback.format_exc()
             raise TypeError(tb)
         return company
+
+
+class AddAdminToCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ['admins', 'id']
+
+    def update(self, instance, validated_data):
+        if 'id' in validated_data:
+            raise serializers.ValidationError(
+                {
+                    'id': "Can't Change Company id After Creation"
+                }
+            )
+        instance.admins.add(*[user.id for user in validated_data['admins']])
+        return instance
+
+
+class DeleteAdminToCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ['admins', 'id']
+
+    def update(self, instance, validated_data):
+        if 'id' in validated_data:
+            raise serializers.ValidationError(
+                {
+                    'id': "Can't Change Company id After Creation"
+                }
+            )
+        instance.admins.remove(*[user.id for user in validated_data['admins']])
+        return instance

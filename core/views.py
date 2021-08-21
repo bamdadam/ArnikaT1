@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
-from rest_framework import generics, status
+from rest_framework import generics, status, mixins
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import APIException, NotFound
 from rest_framework.generics import get_object_or_404
@@ -26,6 +26,7 @@ from core.Mixins import MultipleFieldLookupMixin
 # basic view for listing all FinancialSummary records
 # or creating a FinancialSummary record
 class FinancialSummaryListCreateAPIView(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated, IsCompanyAdmin)
 
     def get_queryset(self):
         net_income = self.kwargs.get('NetIncome')
@@ -42,6 +43,7 @@ class FinancialSummaryListCreateAPIView(generics.ListCreateAPIView):
 # basic view for Retrieving - Updating - Deleting a specific FinancialSummary record
 # which uses the Year field in order to find the specified record
 class FinancialSummaryRetrieveUpdateDestroyAPIView(MultipleFieldLookupMixin, generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated, IsCompanyAdmin)
     queryset = FinancialSummary.objects.all()
     lookup_fields = ['Company', 'Year']
 
@@ -109,22 +111,24 @@ class UserListCreateAPIView(generics.ListCreateAPIView):
         return UserSerializer_dict.get(self.request.version, UserSerializer)
 
 
-class AddAdminToCompany(generics.UpdateAPIView):
+class AddDeleteAdminToCompany(mixins.UpdateModelMixin,
+                              mixins.DestroyModelMixin,
+                              generics.GenericAPIView):
     queryset = Company.objects.all()
     permission_classes = (IsAuthenticated, IsCompanyAdmin)
     lookup_url_kwarg = 'Company'
 
     def get_serializer_class(self):
-        return AddAdminToCompany_dict.get(self.request.version, AddAdminToCompanySerializer)
+        if self.request.method == 'PATCH':
+            return AddAdminToCompany_dict.get(self.request.version, AddAdminToCompanySerializer)
+        elif self.request.method == 'DELETE':
+            return DeleteAdminToCompany_dict.get(self.request.version, DeleteAdminToCompanySerializer)
 
+    def delete(self, request, *args, **kwargs):
+        return super(AddDeleteAdminToCompany, self).update(request, *args, **kwargs)
 
-class DeleteAdminToCompany(generics.UpdateAPIView):
-    queryset = Company.objects.all()
-    permission_classes = (IsAuthenticated, IsCompanyAdmin)
-    lookup_url_kwarg = 'Company'
-
-    def get_serializer_class(self):
-        return DeleteAdminToCompany_dict.get(self.request.version, DeleteAdminToCompanySerializer)
+    def patch(self, request, *args, **kwargs):
+        return super(AddDeleteAdminToCompany, self).update(request, *args, **kwargs)
 
 
 @api_view()

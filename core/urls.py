@@ -2,7 +2,7 @@ from django.urls import path, register_converter
 from core.converter import PersianPathConverter
 from core.views import FinancialSummaryListCreateAPIView, \
     FinancialSummaryRetrieveUpdateDestroyAPIView, CompanyListCreateAPIView, \
-    CompanyRetrieveUpdateDeleteAPIView, UserListCreateAPIView, AddAdminToCompany, DeleteAdminToCompany
+    CompanyRetrieveUpdateDeleteAPIView, UserListCreateAPIView, AddDeleteAdminToCompany
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 # urls for implemented views
@@ -34,11 +34,8 @@ urlpatterns = [
     path('company/<int:Company>/', CompanyRetrieveUpdateDeleteAPIView.as_view(),
          name="retrieve_update_destroy_company"),
 
-    path('company/<int:Company>/addadmin/', AddAdminToCompany.as_view(),
+    path('company/<int:Company>/admins/', AddDeleteAdminToCompany.as_view(),
          name="add_admin_for_company"),
-
-    path('company/<int:Company>/deleteadmin/', DeleteAdminToCompany.as_view(),
-         name="delete_admin_for_company"),
 
     path('registeruser/', UserListCreateAPIView.as_view(),
          name='register_user'),

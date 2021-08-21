@@ -92,5 +92,6 @@ class DeleteAdminToCompanySerializer(serializers.ModelSerializer):
                     'id': "Can't Change Company id After Creation"
                 }
             )
+        print(self.context['request'].method)
         instance.admins.remove(*[user.id for user in validated_data['admins']])
         return instance

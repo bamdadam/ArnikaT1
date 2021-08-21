@@ -64,6 +64,8 @@ class CompanyListCreateAPIView(generics.ListCreateAPIView):
 
 class CompanyRetrieveUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Company.objects.all()
+    permission_classes = (IsAuthenticated, IsCompanyAdmin)
+    lookup_url_kwarg = 'Company'
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -100,7 +102,6 @@ class CompanyRetrieveUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UserListCreateAPIView(generics.ListCreateAPIView):
-    # queryset = get_user_model().objects.all()
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
 
@@ -111,6 +112,7 @@ class UserListCreateAPIView(generics.ListCreateAPIView):
 class AddAdminToCompany(generics.UpdateAPIView):
     queryset = Company.objects.all()
     permission_classes = (IsAuthenticated, IsCompanyAdmin)
+    lookup_url_kwarg = 'Company'
 
     def get_serializer_class(self):
         return AddAdminToCompany_dict.get(self.request.version, AddAdminToCompanySerializer)
@@ -119,6 +121,7 @@ class AddAdminToCompany(generics.UpdateAPIView):
 class DeleteAdminToCompany(generics.UpdateAPIView):
     queryset = Company.objects.all()
     permission_classes = (IsAuthenticated, IsCompanyAdmin)
+    lookup_url_kwarg = 'Company'
 
     def get_serializer_class(self):
         return DeleteAdminToCompany_dict.get(self.request.version, DeleteAdminToCompanySerializer)

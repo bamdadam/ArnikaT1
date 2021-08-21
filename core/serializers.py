@@ -4,14 +4,14 @@ from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from core.models import FinancialSummary, Company
+from core.models import FinancialSummary, Company, CustomUser
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ['username', 'password', 'company_admin']
-        read_only_fields = ['company_admin']
+        model = CustomUser
+        fields = ['username', 'password', 'company_admin', 'email', 'id']
+        read_only_fields = ['company_admin', 'id']
         extra_kwargs = {
             'password': {'write_only': True}
         }

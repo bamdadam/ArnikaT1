@@ -104,7 +104,7 @@ class CompanyRetrieveUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UserListCreateAPIView(generics.ListCreateAPIView):
-    queryset = User.objects.all()
+    queryset = get_user_model().objects.all()
     permission_classes = (AllowAny,)
 
     def get_serializer_class(self):

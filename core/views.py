@@ -6,7 +6,7 @@ from rest_framework import generics, status, mixins
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import APIException, NotFound
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -26,7 +26,11 @@ from core.Mixins import MultipleFieldLookupMixin
 # basic view for listing all FinancialSummary records
 # or creating a FinancialSummary record
 class FinancialSummaryListCreateAPIView(generics.ListCreateAPIView):
-    permission_classes = (IsAuthenticated, IsCompanyAdmin)
+    # permission_classes = (IsAuthenticatedOrReadOnly,IsCompanyAdmin,)
+    permission_classes_by_action = {
+        "POST": [IsAuthenticated, IsCompanyAdmin],
+        "GET": [IsAuthenticatedOrReadOnly],
+    }
 
     def get_queryset(self):
         net_income = self.kwargs.get('NetIncome')
@@ -38,6 +42,20 @@ class FinancialSummaryListCreateAPIView(generics.ListCreateAPIView):
 
     def get_serializer_class(self):
         return FinancialSummarySerializer_dict.get(self.request.version, FinancialSummarySerializer)
+
+    def get_permissions(self):
+        try:
+            # return permission_classes depending on `action`
+            return [
+                permission()
+                for permission in self.permission_classes_by_action[self.request.method]
+            ]
+        except KeyError:
+            # action is not set return default permission_classes
+            return [
+                permission()
+                for permission in self.permission_classes_by_action["default"]
+            ]
 
 
 # basic view for Retrieving - Updating - Deleting a specific FinancialSummary record

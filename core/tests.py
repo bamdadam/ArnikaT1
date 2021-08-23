@@ -4,12 +4,14 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIRequestFactory
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.test import APIClient
 from core.models import FinancialSummary, Company, CustomUser
 
 # Create your tests here.
 from core.serializers import FinancialSummarySerializer
 
-client = Client()
+client = APIClient()
 
 
 class FinancialSummaryTests(TestCase):
@@ -19,6 +21,10 @@ class FinancialSummaryTests(TestCase):
         self.f1 = FinancialSummary.objects.create(Company=self.c1, NetIncome=2150, Year="2017-02-13")
         self.f2 = FinancialSummary.objects.create(Company=self.c2, NetIncome=2155, Year="2017-04-13")
         self.u1 = CustomUser.objects.create_user(username="cc1", password="ps1", email="cc1@gmail.com")
+        self.c1.admins.add(self.u1)
+        self.c2.admins.add(self.u1)
+        self.refresh = RefreshToken.for_user(self.u1)
+        client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.refresh.access_token}')
         self.valid_f1 = {
             # 'Company': self.c2.id,
             'NetIncome': '3100',
@@ -46,7 +52,8 @@ class FinancialSummaryTests(TestCase):
         }
 
     def test_get_all_FinancialSummary(self):
-        response = client.get(reverse('v1:list_create_financial_summary'))
+        response = client.get(reverse('v1:list_create_financial_summary'),
+                              )
         summaries = FinancialSummary.objects.all()
         serializer = FinancialSummarySerializer(summaries, many=True)
         self.assertEqual(response.data, serializer.data)
@@ -127,3 +134,11 @@ class FinancialSummaryTests(TestCase):
                                    "password": "ps1"
                                })
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def get_jwt_token(self):
+        response = client.post(reverse("v1:token_obtain_pair"),
+                               data={
+                                   "username": "cc1",
+                                   "password": "ps1"
+                               })
+        return response.data['access']

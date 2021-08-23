@@ -169,8 +169,8 @@ SIMPLE_JWT = {
 AUTH_USER_MODEL = 'core.CustomUser'
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Your Project API',
-    'DESCRIPTION': 'Your project description',
+    'TITLE': 'Financial Summary API',
+    'DESCRIPTION': 'Create Companies and work with their Financial Data',
     'VERSION': '1.0.0',
     # OTHER SETTINGS
 }

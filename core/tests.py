@@ -91,3 +91,4 @@ class FinancialSummaryTests(TestCase):
                                          args=[self.c2.id, "2017-04-25"]),
                                  content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+

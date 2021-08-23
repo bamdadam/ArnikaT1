@@ -4,7 +4,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIRequestFactory
-from core.models import FinancialSummary, Company
+from core.models import FinancialSummary, Company, CustomUser
 
 # Create your tests here.
 from core.serializers import FinancialSummarySerializer
@@ -18,6 +18,7 @@ class FinancialSummaryTests(TestCase):
         self.c2 = Company.objects.create(CompanyName="comp2")
         self.f1 = FinancialSummary.objects.create(Company=self.c1, NetIncome=2150, Year="2017-02-13")
         self.f2 = FinancialSummary.objects.create(Company=self.c2, NetIncome=2155, Year="2017-04-13")
+        self.u1 = CustomUser.objects.create_user(username="cc1", password="ps1", email="cc1@gmail.com")
         self.valid_f1 = {
             # 'Company': self.c2.id,
             'NetIncome': '3100',
@@ -32,6 +33,16 @@ class FinancialSummaryTests(TestCase):
             'Company': self.c1.id,
             'NetIncome': "apple",
             'Year': "2018-11-15"
+        }
+        self.valid_user = {
+            'username': "cu1",
+            'password': "ps1",
+            'email': "cu1@gmail.com"
+        }
+        self.invalid_user = {
+            'username': "cu2",
+            'password': "ps1",
+            'email': "fdsfdsfds"
         }
 
     def test_get_all_FinancialSummary(self):
@@ -92,3 +103,27 @@ class FinancialSummaryTests(TestCase):
                                  content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_create_valid_invalid_user(self):
+        response = client.post(reverse("v1:register_user"),
+                               data=json.dumps(self.valid_user),
+                               content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = client.post(reverse("v1:register_user"),
+                               data=json.dumps(self.invalid_user),
+                               content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_valid_invalid_login(self):
+        response = client.post(reverse("v1:token_obtain_pair"),
+                               data={
+                                   "username": "cc1",
+                                   "password": "ps1"
+                               })
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue("access" in response.data)
+        response = client.post(reverse("v1:token_obtain_pair"),
+                               data={
+                                   "username": "cc2",
+                                   "password": "ps1"
+                               })
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
